@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/createuser.tsx","./src/components/userdetails.tsx","./src/components/userlist.tsx","./src/services/api.ts","./src/services/userservice.ts","./src/test/setup.ts","./src/types/user.ts"],"version":"5.8.3"}

@@ -1,9 +1,11 @@
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+RUN npm install -g pnpm
+
 COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install
+RUN pnpm install
 
 COPY . .
 RUN pnpm build
