@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:80'
+    environment:
+      - VITE_USER_SERVICE_URL=http://user-service:8000
+      - VITE_ENRICHMENT_SERVICE_URL=http://enrichment-service:8001
+    depends_on:
+      - user-service
+      - enrichment-service
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=user_manager
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - db
+      - rabbitmq
+
+  enrichment-service:
+    build:
+      context: ./enrichment-service
+      dockerfile: Dockerfile
+    ports:
+      - '8001:8001'
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=user_manager
+      - MYSQL_ROOT_PASSWORD=secret
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+volumes:
+  mysql_data:
